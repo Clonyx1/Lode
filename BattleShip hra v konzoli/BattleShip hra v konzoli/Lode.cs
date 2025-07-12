@@ -25,15 +25,21 @@ namespace BattleShip_hra_v_konzoli
             NastaveniLodi(out letadlova, out bitevni, out kriznik, out ponorka, out clun);
 
             IEnumerable<(int X, int Y)> souradniceLodi = letadlova.SouradniceLode();
+
             foreach (var souradnice in souradniceLodi) hraciPole[souradnice.X, souradnice.Y] = "X";
+            
             souradniceLodi = bitevni.SouradniceLode();
             foreach(var souradnice in souradniceLodi) hraciPole[souradnice.X, souradnice.Y] = "X";
+            
             souradniceLodi = kriznik.SouradniceLode();
             foreach (var souradnice in souradniceLodi) hraciPole[souradnice.X, souradnice.Y] = "X";
+
             souradniceLodi = ponorka.SouradniceLode();
             foreach (var souradnice in souradniceLodi) hraciPole[souradnice.X, souradnice.Y] = "X";
+
             souradniceLodi = clun.SouradniceLode();
             foreach (var souradnice in souradniceLodi) hraciPole[souradnice.X, souradnice.Y] = "X";
+
             return hraciPole;
         }
         //Vygeneruje lodi náhodnou orientaci
@@ -48,80 +54,64 @@ namespace BattleShip_hra_v_konzoli
         public (int X, int Y) StartovaciPozice(int delka, Orientace orientace)
         {
             Random r = new Random();
-            int poziceX = 0;
-            int poziceY = 0;
-            if (orientace == Orientace.Horizontalni)
-            {
-                poziceX = (int)r.Next(0, 7);
-                if (poziceX + delka > 9) poziceX -= delka;
-                poziceY = (int)r.Next(0, 9);
-            }
-            else
-            {
-                poziceX = (int)r.Next(0, 9);
-                poziceY = (int)r.Next(0, 9);
-                if(poziceY + delka > 9) poziceY -= delka;
-            }
+            List<(int X, int Y)> moznosti = new List<(int X, int Y)>();
 
-            return (poziceX, poziceY);
-        }
-        //Metoda pro zajištění, že startovní pozice je validní
-        private (int X, int Y) KontrolaStartovniPozice(int delka, Orientace o)
-        {
-            HashSet<(int x, int y)> vsechnySouraniceLodi = new HashSet<(int x, int y)>();
-            (int X, int Y) pocatecniSouradnice;
-            bool pokracovat;
-            do
+            int maximalniX = orientace == Orientace.Horizontalni ? 9 - delka : 9;
+            int maximalniY = orientace == Orientace.Vertikalni ? 9 - delka : 9;
+
+            for(int y = 0; y < maximalniY; y++)
             {
-                pokracovat = false;
-                pocatecniSouradnice = StartovaciPozice(delka, o);
-                if(o == Orientace.Horizontalni)
+                for(int x = 0; x < maximalniX; x++)
                 {
-                    for(int i = 0; i < delka; i++)
-                    {
-                        (int X, int Y) souradnice = (pocatecniSouradnice.X + i, pocatecniSouradnice.Y);
-                        vsechnySouraniceLodi.Add(souradnice);
-                    }
-                }
-                else
-                {
+                    bool koliduje = false;
                     for (int i = 0; i < delka; i++)
                     {
-                        (int X, int Y) souradnice = (pocatecniSouradnice.X, pocatecniSouradnice.Y+i);
-                        vsechnySouraniceLodi.Add(souradnice);
+                        int delkaX = x + (orientace == Orientace.Horizontalni ? i : 0);
+                        int delkaY = y + (orientace == Orientace.Vertikalni ? 0 : i);
+
+                        if (zabraneSouradnice.Contains((delkaX, delkaY)))
+                        {
+                            koliduje = true;
+                            break;
+                        }
                     }
-                }
-                foreach(var souradnice in vsechnySouraniceLodi)
-                {
-                    if (zabraneSouradnice.Contains(souradnice)) pokracovat = true;
+                    if (!koliduje) moznosti.Add((x, y));
                 }
             }
-            while (pokracovat);
 
-            return pocatecniSouradnice;
+            return moznosti[r.Next(moznosti.Count)];
         }
         //Vygenerovat lodě
         private void NastaveniLodi(out Lod letadlova, out Lod bitevni, out Lod kriznik, out Lod ponorka, out Lod clun)
         {
-            //Nastavení letadlové lodě
+            int delka = 5;
+
             Orientace o = NahodnaOrientace();
-            letadlova = new Lod("Letadlová loď", 5, o, KontrolaStartovniPozice(5, o));
+            letadlova = new Lod("Letadlová loď", delka, o, StartovaciPozice(delka, o));
+            Console.WriteLine("Počáteční pozice letadlové lodi: " + letadlova.PocatecniPozice + ", orientace: " + o);
             foreach(var souradnice in letadlova.SouradniceLode()) zabraneSouradnice.Add(souradnice);
-            //Nastavení bitevní lodě
+
+            delka = 4;
             o = NahodnaOrientace();
-            bitevni = new Lod("Bitevní loď", 4, o, KontrolaStartovniPozice(5, o));
+            bitevni = new Lod("Bitevní loď", delka, o, StartovaciPozice(delka, o));
+            Console.WriteLine("Počáteční pozice bitevní lodi: " + bitevni.PocatecniPozice + ", orientace: " + o);
             foreach (var souradnice in bitevni.SouradniceLode()) zabraneSouradnice.Add(souradnice);
-            //Nastavení křižníku
+
+            delka = 3;
             o = NahodnaOrientace();
-            kriznik = new Lod("Křižník", 3, o, KontrolaStartovniPozice(3, o));
+            kriznik = new Lod("Křižník", delka, o, StartovaciPozice(delka, o));
+            Console.WriteLine("Počáteční pozice křižníku: " + kriznik.PocatecniPozice + ", orientace: " + o);
             foreach (var souradnice in kriznik.SouradniceLode()) zabraneSouradnice.Add(souradnice);
-            //Nastavení ponorky
+            
             o = NahodnaOrientace();
-            ponorka = new Lod("Ponorka", 3, o, KontrolaStartovniPozice(3, o));
+            ponorka = new Lod("Ponorka", delka, o, StartovaciPozice(delka, o));
+            Console.WriteLine("Počáteční pozice ponorky: " + ponorka.PocatecniPozice + ", orientace: " + o);
             foreach (var souradnice in ponorka.SouradniceLode()) zabraneSouradnice.Add(souradnice);
-            //Nastavení člunu
+
+            delka = 2;
             o = NahodnaOrientace();
-            clun = new Lod("Člun", 2, o, KontrolaStartovniPozice(2, o));
+            clun = new Lod("Člun", delka, o, StartovaciPozice(delka, o));
+            Console.WriteLine("Počáteční pozice člunu: " + clun.PocatecniPozice + ", orientace: " + o);
         }
     }
 }
