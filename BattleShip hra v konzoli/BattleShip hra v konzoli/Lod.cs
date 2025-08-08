@@ -8,8 +8,8 @@ namespace BattleShip_hra_v_konzoli
 {
     public enum Orientace
     {
-        Horizontalni,
-        Vertikalni
+        Horizontalni = 0,
+        Vertikalni = 1
     }
     class Lod
     {
