@@ -9,38 +9,43 @@ namespace BattleShip_hra_v_konzoli
     public class Lode
     {
         private HashSet<(int, int)> zabraneSouradnice = new HashSet<(int, int)>();
-        private static readonly Random r = new Random();    
-        Lod letadlova;
-        Lod bitevni;
-        Lod kriznik;
-        Lod ponorka;
-        Lod clun;
+        private static readonly Random r = new Random();
+        public Lod letadlova;
+        public Lod bitevni;
+        public Lod kriznik;
+        public Lod ponorka;
+        public Lod clun;
         public Lode()
         {
         }
         //Metody
-        public string[,] NovaHra()
+        public bool[,] NovaHra()
         {
-            //Nastavení hracího pole a vytvoření lodí
-            string[,] hraciPole = new string[10, 10];
-            NastaveniLodi(out letadlova, out bitevni, out kriznik, out ponorka, out clun);
+            letadlova = InicializaceLodi("Letadlová loď", 5);
+            bitevni = InicializaceLodi("Bitevní loď", 4);
+            kriznik = InicializaceLodi("Křižník", 3);
+            ponorka = InicializaceLodi("Ponorka", 3);
+            clun = InicializaceLodi("Člun", 2);
 
-            IEnumerable<(int X, int Y)> souradniceLodi = letadlova.SouradniceLode();
+            bool[,] hraciPole = InicializaceHracihoPole();
 
-            foreach (var souradnice in souradniceLodi) hraciPole[souradnice.X, souradnice.Y] = "X";
-            
-            souradniceLodi = bitevni.SouradniceLode();
-            foreach(var souradnice in souradniceLodi) hraciPole[souradnice.X, souradnice.Y] = "X";
-            
-            souradniceLodi = kriznik.SouradniceLode();
-            foreach (var souradnice in souradniceLodi) hraciPole[souradnice.X, souradnice.Y] = "X";
+            return hraciPole;
+        }
+        private bool[,] InicializaceHracihoPole()
+        {
+            bool[,] hraciPole = new bool[10, 10];
 
-            souradniceLodi = ponorka.SouradniceLode();
-            foreach (var souradnice in souradniceLodi) hraciPole[souradnice.X, souradnice.Y] = "X";
+            IEnumerable<(int X, int Y)> poziceLodi = letadlova.SouradniceLode().Concat(bitevni.SouradniceLode())
+                .Concat(kriznik.SouradniceLode()).Concat(ponorka.SouradniceLode()).Concat(clun.SouradniceLode());
 
-            souradniceLodi = clun.SouradniceLode();
-            foreach (var souradnice in souradniceLodi) hraciPole[souradnice.X, souradnice.Y] = "X";
-
+            for(int i = 0; i < 10; i++)
+            {
+                for(int j = 0;  j < 10; j++)
+                {
+                    (int X, int Y) momentalniPozice = (i, j);
+                    if (poziceLodi.Contains(momentalniPozice)) hraciPole[i, j] = true;
+                }
+            }
             return hraciPole;
         }
         //Vygeneruje lodi náhodnou orientaci
@@ -133,35 +138,12 @@ namespace BattleShip_hra_v_konzoli
                 }
             }
         }
-        //Vygenerovat lodě
-        private void NastaveniLodi(out Lod letadlova, out Lod bitevni, out Lod kriznik, out Lod ponorka, out Lod clun)
+        private Lod InicializaceLodi(string nazev, int delka)
         {
-            int delka = 5;
-
-            Orientace o = NahodnaOrientace(5);
-            letadlova = new Lod("Letadlová loď", delka, o, StartovaciPozice(delka, o));
-            ZabratSouradnice(letadlova);
-
-            delka = 4;
-
-            o = NahodnaOrientace(4);
-            bitevni = new Lod("Bitevní loď", delka, o, StartovaciPozice(delka, o));
-            ZabratSouradnice(bitevni);
-
-            delka = 3;
-
-            o = NahodnaOrientace(3);
-            kriznik = new Lod("Křižník", delka, o, StartovaciPozice(delka, o));
-            ZabratSouradnice(kriznik);
-            
-            o = NahodnaOrientace(3);
-            ponorka = new Lod("Ponorka", delka, o, StartovaciPozice(delka, o));
-            ZabratSouradnice(ponorka);
-
-            delka = 2;
-            o = NahodnaOrientace(2);
-            clun = new Lod("Člun", delka, o, StartovaciPozice(delka, o));
-
+            Orientace o = NahodnaOrientace(delka);
+            var lod = new Lod(nazev, delka, o, StartovaciPozice(delka, o));
+            ZabratSouradnice(lod);
+            return lod;
         }
     }
 }

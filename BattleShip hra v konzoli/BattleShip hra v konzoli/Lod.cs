@@ -11,7 +11,7 @@ namespace BattleShip_hra_v_konzoli
         Horizontalni = 0,
         Vertikalni = 1
     }
-    class Lod
+    public class Lod
     {
         public string Nazev {  get; set; }
         public int Delka { get; set; }
