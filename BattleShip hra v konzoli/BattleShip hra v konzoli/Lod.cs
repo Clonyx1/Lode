@@ -17,7 +17,7 @@ namespace BattleShip_hra_v_konzoli
         public int Delka { get; set; }
         public (int X, int Y) PocatecniPozice { get; set; }
         public Orientace Orientace { get; set; }
-        public HashSet<(int, int)> Zasahy { get; set; } = new();
+        public int Zasahy { get; set; } = new();
         //Konstruktor
         public Lod(string n, int d, Orientace o, (int X, int Y) pozice) 
         {

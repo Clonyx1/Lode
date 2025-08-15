@@ -2,24 +2,20 @@
 
 Lode novaHra = new Lode();
 
-//TOHLE BUDE CHTÍT PŘEDĚLAT TAK, ABY TO MĚLO (BOOL JeTadyLod, BOOL zautocilJsemSem)
-bool[,] hraciPoleNPC = novaHra.NovaHra();
-bool[,] hraciPoleHrac = novaHra.NovaHra();
+HraciPole[,] hraciPoleNPC = novaHra.NovaHra();
+HraciPole[,] hraciPoleHrac = novaHra.NovaHra();
 
-HashSet<(int X, int Y)> lode = new HashSet<(int X, int Y)>();
-lode.Add(novaHra.letadlova.PocatecniPozice);
-lode.Add(novaHra.kriznik.PocatecniPozice);
-lode.Add(novaHra.ponorka.PocatecniPozice);
-lode.Add(novaHra.bitevni.PocatecniPozice);
-lode.Add(novaHra.clun.PocatecniPozice);
 HerniLogika mometalniHra = new HerniLogika(hraciPoleNPC, hraciPoleHrac);
 
 string[,] viditelnePoleNPC = new string[10, 10];
 
-//Console.WriteLine(string.Join(",", lode));
-while (true)
+bool vyhra = false;
+while (!vyhra)
 {
-    mometalniHra.ZobrazitPole();
+    Console.Clear();
+    mometalniHra.ZobrazitPole("Pole nepřítele", hraciPoleNPC);
+    mometalniHra.ZobrazitPole("Vaše pole", hraciPoleHrac);
+
     Console.WriteLine("Napište souřadnice, na které chcete útočit ve formátu: X, Y");
     string souradnice = Console.ReadLine();
     string[] cislice = souradnice.Split(",");
@@ -33,4 +29,5 @@ while (true)
         Console.Clear();
         Console.WriteLine("Zadejte validní souřadnice");
     }
+    vyhra = mometalniHra.Vyhra();
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,56 +9,35 @@ namespace BattleShip_hra_v_konzoli
 {
     class HerniLogika
     {
-        bool[,] hraciPoleNPC = new bool[10, 10];
-        bool[,] pouzitePoleNPC = new bool[10, 10];
-        string[,] viditelnePoleNPC = new string[10, 10];
+        HraciPole[,] poleNPC = new HraciPole[10,10];
+        int pocetLodiNPC = 0;
 
-        bool[,] hraciPoleHrac = new bool[10, 10];
-        bool[,] pouzitePoleHrac = new bool[10, 10];
-        string[,] viditelnePoleHrac = new string[10, 10];
+        HraciPole[,] poleHrac = new HraciPole[10, 10];
+        int pocetLodiHrac = 0;
 
         //Konstruktor
-        public HerniLogika(bool[,] poleNPC, bool[,] poleHrac)
+        public HerniLogika(HraciPole[,] poleNPC, HraciPole[,] poleHrac)
         {
-            hraciPoleNPC = poleNPC;
-            hraciPoleHrac = poleHrac;
-
-            for (int y = 0; y < hraciPoleNPC.GetLength(1); y++)
-            {
-                for (int x = 0; x < hraciPoleNPC.GetLength(0); x++)
-                {
-                    viditelnePoleNPC[x, y] = "O";
-                    viditelnePoleHrac[x, y] = "O";
-                }
-            }
+            this.poleNPC = poleNPC;
+            this.poleHrac = poleHrac;
         }
         //Metody
-        public void ZobrazitPole()
+        public void ZobrazitPole(string nadpis, HraciPole[,] pole)
         {
-            Console.WriteLine("Herní pole NPC");
+            Console.WriteLine(nadpis);
             bool prvniIterace = true;
-            for (int y = 0; y < hraciPoleNPC.GetLength(1); y++)
+            for (int y = 0; y < pole.GetLength(1); y++)
             {
-                if(!prvniIterace) Console.Write(y + " ");
-                for (int x = 0; x < hraciPoleNPC.GetLength(0); x++)
+                if (!prvniIterace) Console.Write(y + " ");
+                for (int x = 0; x < pole.GetLength(0); x++)
                 {
-                    if(prvniIterace)
+                    if (prvniIterace)
                     {
                         Console.WriteLine("  0 1 2 3 4 5 6 7 8 9");
                         Console.Write("0 ");
                         prvniIterace = false;
                     }
-                    Console.Write(viditelnePoleNPC[x, y] + " ");
-                }
-                Console.WriteLine();
-            }
-
-            Console.WriteLine("Herní pole hráč");
-            for (int y = 0; y < hraciPoleHrac.GetLength(1); y++)
-            {
-                for (int x = 0; x < hraciPoleHrac.GetLength(0); x++)
-                {
-                    Console.Write(viditelnePoleHrac[x, y] + " ");
+                    Console.Write(pole[x, y].Znak + " ");
                 }
                 Console.WriteLine();
             }
@@ -65,21 +45,34 @@ namespace BattleShip_hra_v_konzoli
         //Přijme souřadnice zadané uživatelem a automaticky zaútočí
         public void Zasah((int X, int Y) souradnice)
         {
+            UtokHrac(souradnice);
+        }
+        private void UtokHrac((int X, int Y) souradnice)
+        {
             int X = souradnice.X;
             int Y = souradnice.Y;
 
             if (X <= 9 && X >= 0 && Y <= 9 && X >= 0)
             {
-                if (pouzitePoleHrac[X, Y] == false)
+                if (poleHrac[X, Y].Pouzito == false)
                 {
-                    pouzitePoleHrac[X, Y] = true;
-                    if (hraciPoleNPC[X, Y] == true)
+                    poleHrac[X, Y].Pouzito = true;
+                    if (poleNPC[X, Y].JeLod == true)
                     {
-                        viditelnePoleNPC[X, Y] = "X";
+                        poleNPC[X, Y].Znak = "X";
+                        poleNPC[X, Y].Lod.Zasahy += 1;
+
+                        if (poleNPC[X, Y].Lod.Zasahy >= poleNPC[X, Y].Lod.Delka)
+                        {
+                            Console.WriteLine("Zničili jste " + poleNPC[X, Y].Lod.Nazev);
+                            pocetLodiHrac++;
+                            Console.WriteLine($"Počet zničených lodí: {pocetLodiHrac}/5");
+                            Thread.Sleep(4000);
+                        }
                     }
                     else
                     {
-                        viditelnePoleNPC[X, Y] = ".";
+                        poleNPC[X, Y].Znak = ".";
                     }
                 }
                 else
@@ -93,7 +86,20 @@ namespace BattleShip_hra_v_konzoli
                 Console.WriteLine("Zadané souřadnice jsou mimo rozsah hracího pole, zadejte jiné");
                 return;
             }
-            Console.Clear();
+        }
+        public bool Vyhra()
+        {
+            if(pocetLodiNPC == 5)
+            {
+                Console.WriteLine("Prohráli jste");
+                return true;
+            }
+            if(pocetLodiHrac == 5)
+            {
+                Console.WriteLine("Vyhráli jste");
+                return true;
+            }
+            return false;
         }
     }
 }

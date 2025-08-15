@@ -19,7 +19,7 @@ namespace BattleShip_hra_v_konzoli
         {
         }
         //Metody
-        public bool[,] NovaHra()
+        public HraciPole[,] NovaHra()
         {
             letadlova = InicializaceLodi("Letadlová loď", 5);
             bitevni = InicializaceLodi("Bitevní loď", 4);
@@ -27,26 +27,36 @@ namespace BattleShip_hra_v_konzoli
             ponorka = InicializaceLodi("Ponorka", 3);
             clun = InicializaceLodi("Člun", 2);
 
-            bool[,] hraciPole = InicializaceHracihoPole();
+            HraciPole[,] hraciPole = InicializaceHracihoPole();
 
             return hraciPole;
         }
-        private bool[,] InicializaceHracihoPole()
+        private HraciPole[,] InicializaceHracihoPole()
         {
-            bool[,] hraciPole = new bool[10, 10];
-
-            IEnumerable<(int X, int Y)> poziceLodi = letadlova.SouradniceLode().Concat(bitevni.SouradniceLode())
-                .Concat(kriznik.SouradniceLode()).Concat(ponorka.SouradniceLode()).Concat(clun.SouradniceLode());
-
-            for(int i = 0; i < 10; i++)
+            HraciPole[,] hraciPole = new HraciPole[10, 10];
+            for (int i = 0; i < 10; i++)
             {
-                for(int j = 0;  j < 10; j++)
+                for (int j = 0; j < 10; j++)
                 {
-                    (int X, int Y) momentalniPozice = (i, j);
-                    if (poziceLodi.Contains(momentalniPozice)) hraciPole[i, j] = true;
+                    hraciPole[i, j] = new HraciPole("O", null, false);
                 }
             }
+            Lod[] lode = new Lod[] { letadlova, bitevni, kriznik, ponorka, clun };
+
+            foreach(var lod in lode) NaplneniHracihoPole(hraciPole, lod);
+
             return hraciPole;
+        }
+        private void NaplneniHracihoPole(HraciPole[,] hraciPole, Lod lod)
+        {
+            IEnumerable<(int X, int Y)> poziceLodi = lod.SouradniceLode();
+            foreach (var pozice in poziceLodi)
+            {
+                int X = pozice.X;
+                int Y = pozice.Y;
+
+                hraciPole[(int)X, (int)Y] = new HraciPole("O", lod, false);
+            }
         }
         //Vygeneruje lodi náhodnou orientaci
         public Orientace NahodnaOrientace(int delka)
