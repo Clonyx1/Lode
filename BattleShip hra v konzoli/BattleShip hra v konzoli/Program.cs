@@ -22,7 +22,7 @@ while (!vyhra)
     try
     {
         (int X, int Y) bodZasahu = (Convert.ToInt32(cislice[0]), Convert.ToInt32(cislice[1]));
-        mometalniHra.Zasah(bodZasahu);
+        mometalniHra.Utok(bodZasahu);
     }
     catch
     {
