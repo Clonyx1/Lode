@@ -38,7 +38,7 @@ namespace BattleShip_hra_v_konzoli
             {
                 for (int j = 0; j < 10; j++)
                 {
-                    hraciPole[i, j] = new HraciPole("O", null, false);
+                    hraciPole[i, j] = new HraciPole("~", null, false);
                 }
             }
             Lod[] lode = new Lod[] { letadlova, bitevni, kriznik, ponorka, clun };
@@ -55,7 +55,7 @@ namespace BattleShip_hra_v_konzoli
                 int X = pozice.X;
                 int Y = pozice.Y;
 
-                hraciPole[(int)X, (int)Y] = new HraciPole("O", lod, false);
+                hraciPole[(int)X, (int)Y] = new HraciPole("~", lod, false);
             }
         }
         //Vygeneruje lodi náhodnou orientaci
