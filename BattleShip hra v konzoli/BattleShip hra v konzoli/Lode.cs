@@ -151,6 +151,7 @@ namespace BattleShip_hra_v_konzoli
         private Lod InicializaceLodi(string nazev, int delka)
         {
             Orientace o = NahodnaOrientace(delka);
+
             var lod = new Lod(nazev, delka, o, StartovaciPozice(delka, o));
             ZabratSouradnice(lod);
             return lod;

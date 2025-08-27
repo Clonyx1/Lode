@@ -16,9 +16,18 @@ while (!vyhra)
     mometalniHra.ZobrazitPole("Pole nepřítele", hraciPoleNPC);
     mometalniHra.ZobrazitPole("Vaše pole", hraciPoleHrac);
 
-    Console.WriteLine("Napište souřadnice, na které chcete útočit ve formátu: X, Y");
+    Console.WriteLine("Napište souřadnice, na které chcete útočit ve formátu: X, Y nebo X Y");
     string souradnice = Console.ReadLine();
-    string[] cislice = souradnice.Split(",");
+    string[] cislice = new string[2];
+
+    if (souradnice.Contains(','))
+    {
+        cislice = souradnice.Split(",");
+    }
+    else
+    {
+        cislice = souradnice.Split(" ");
+    }      
     try
     {
         (int X, int Y) bodZasahu = (Convert.ToInt32(cislice[0]), Convert.ToInt32(cislice[1]));
@@ -28,6 +37,7 @@ while (!vyhra)
     {
         Console.Clear();
         Console.WriteLine("Zadejte validní souřadnice");
+        Thread.Sleep(3000);
     }
     vyhra = mometalniHra.Vyhra();
 }

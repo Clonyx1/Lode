@@ -74,6 +74,16 @@ namespace BattleShip_hra_v_konzoli
                         {
                             Console.WriteLine("Zničili jste " + poleNPC[X, Y].Lod.Nazev);
                             pocetLodiHrac++;
+
+                            foreach(var s in poleNPC[X, Y].Lod.SousedniSouradnice)
+                            {
+                                int x = s.X;
+                                int y = s.Y;
+
+                                poleNPC[x, y].Znak = ".";
+                                poleNPC[x, y].Pouzito = true;
+                            }
+
                             Console.WriteLine($"Počet zničených lodí: {pocetLodiHrac}/5");
                             Thread.Sleep(4000);
                         }
@@ -212,6 +222,16 @@ namespace BattleShip_hra_v_konzoli
                 {
                     Console.WriteLine("Vaše loď " + poleHrac[X, Y].Lod.Nazev + " byla zničena");
                     pocetLodiNPC++;
+
+                    foreach (var s in poleHrac[X, Y].Lod.SousedniSouradnice)
+                    {
+                        int x = s.X;
+                        int y = s.Y;
+
+                        poleHrac[x, y].Znak = ".";
+                        poleHrac[x, y].Pouzito = true;
+                    }
+
                     Console.WriteLine($"Počet zničených lodí: {pocetLodiNPC}/5");
                     Thread.Sleep(4000);
                     Zasahy.Clear();
