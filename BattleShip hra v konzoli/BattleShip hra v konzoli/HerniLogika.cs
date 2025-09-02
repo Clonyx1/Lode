@@ -8,6 +8,13 @@ using System.Threading.Tasks;
 
 namespace BattleShip_hra_v_konzoli
 {
+    public enum VysledekZasahu
+    {
+        Vedle, 
+        Zasah,
+        Potopena,
+        Neplatne
+    }
     class HerniLogika
     {
         HraciPole[,] poleNPC = new HraciPole[10,10];
@@ -62,40 +69,17 @@ namespace BattleShip_hra_v_konzoli
 
             if (X <= 9 && X >= 0 && Y <= 9 && Y >= 0)
             {
-                if (!poleNPC[X, Y].Pouzito)
+                VysledekZasahu vysledek = KontrolaZasahu(X, Y, poleNPC,ref pocetLodiHrac);
+                if (vysledek == VysledekZasahu.Potopena)
                 {
-                    poleNPC[X, Y].Pouzito = true;
-                    if (poleNPC[X, Y].JeLod)
-                    {
-                        poleNPC[X, Y].Znak = "X";
-                        poleNPC[X, Y].Lod.Zasahy++;
-
-                        if (poleNPC[X, Y].Lod.Zasahy >= poleNPC[X, Y].Lod.Delka)
-                        {
-                            Console.WriteLine("Zničili jste " + poleNPC[X, Y].Lod.Nazev);
-                            pocetLodiHrac++;
-
-                            foreach(var s in poleNPC[X, Y].Lod.SousedniSouradnice)
-                            {
-                                int x = s.X;
-                                int y = s.Y;
-
-                                poleNPC[x, y].Znak = ".";
-                                poleNPC[x, y].Pouzito = true;
-                            }
-
-                            Console.WriteLine($"Počet zničených lodí: {pocetLodiHrac}/5");
-                            Thread.Sleep(4000);
-                        }
-                    }
-                    else
-                    {
-                        poleNPC[X, Y].Znak = ".";
-                    }
+                    Console.WriteLine("Zničili jste loď " + poleNPC[X, Y].Lod.Nazev);
+                    Console.WriteLine($"Počet zničených lodí: {pocetLodiHrac}/5");
+                    Thread.Sleep(4000);
                 }
-                else
+                if (vysledek == VysledekZasahu.Neplatne)
                 {
-                    Console.WriteLine("Zadejte jiné souřadnice, tyto už byly použity");
+                    Console.WriteLine("Tyto souřadnice již byly použity, zadejte jiné!");
+                    Thread.Sleep(3000);
                     return;
                 }
             }
@@ -104,6 +88,7 @@ namespace BattleShip_hra_v_konzoli
                 Console.WriteLine("Zadané souřadnice jsou mimo rozsah hracího pole, zadejte jiné");
                 return;
             }
+
             UtokNPC();
         }
         private void UtokNPC()
@@ -134,11 +119,13 @@ namespace BattleShip_hra_v_konzoli
             int X = souradnice.X;
             int Y = souradnice.Y;
 
-            KontrolaZasahu(X, Y);
+            VysledekZasahu vysledek = KontrolaZasahu(X, Y, poleHrac,ref pocetLodiNPC);
+            if (vysledek == VysledekZasahu.Zasah) Zasahy.Add(souradnice);
+
+            pouzitelnaPole.Remove(souradnice);
         }
         private void UtokNpcSousedniSouradniceRandom()
         {
-
             (int X, int Y) souradnice = Zasahy[0];
 
             int X = souradnice.X;
@@ -158,7 +145,16 @@ namespace BattleShip_hra_v_konzoli
             X = souradnice.X;
             Y = souradnice.Y;
 
-            KontrolaZasahu(X, Y);
+            VysledekZasahu vysledek = KontrolaZasahu(X, Y, poleHrac,ref pocetLodiNPC);
+            if (vysledek == VysledekZasahu.Zasah) Zasahy.Add(souradnice);
+            if (vysledek == VysledekZasahu.Potopena)
+            {
+                Zasahy.Clear();
+                Console.WriteLine("Vaše loď " + poleHrac[X, Y].Lod.Nazev + " byla zničena");
+                Console.WriteLine($"Počet zničených lodí: {pocetLodiNPC}/5");
+                Thread.Sleep(4000);
+            }
+            pouzitelnaPole.Remove(souradnice);
         }
         private void UtokNpcNajitaLod()
         {
@@ -202,47 +198,60 @@ namespace BattleShip_hra_v_konzoli
                 }
             }
             var souradnice = mozneUtoky[r.Next(mozneUtoky.Count)];
-
             int X = souradnice.X;
             int Y = souradnice.Y;
 
-            KontrolaZasahu(X, Y);
-        }
-        private void KontrolaZasahu(int X, int Y)
-        {
-            (int X, int Y) souradnice = (X, Y);
-            if (poleHrac[X, Y].JeLod)
+            VysledekZasahu vysledek = KontrolaZasahu(X, Y, poleHrac,ref pocetLodiNPC);
+            if (vysledek == VysledekZasahu.Zasah) Zasahy.Add(souradnice);
+            if (vysledek == VysledekZasahu.Potopena)
             {
-                poleHrac[X, Y].Znak = "X";
-                poleHrac[X, Y].Lod.Zasahy++;
+                Zasahy.Clear();
+                Console.WriteLine("Vaše loď " + poleHrac[X, Y].Lod.Nazev + " byla zničena");
+                Console.WriteLine($"Počet zničených lodí: {pocetLodiNPC}/5");
+                Thread.Sleep(4000);
+            }
+            pouzitelnaPole.Remove(souradnice);
+        }
+        private VysledekZasahu KontrolaZasahu(int X, int Y, HraciPole[,] pole,ref int pocetLodi)
+        {
+            VysledekZasahu vysledek = VysledekZasahu.Vedle;
 
-                Zasahy.Add(souradnice);
-
-                if (poleHrac[X, Y].Lod.Zasahy >= poleHrac[X, Y].Lod.Delka)
+            (int X, int Y) souradnice = (X, Y);
+            if (!pole[X, Y].Pouzito)
+            {
+                if (pole[X, Y].JeLod)
                 {
-                    Console.WriteLine("Vaše loď " + poleHrac[X, Y].Lod.Nazev + " byla zničena");
-                    pocetLodiNPC++;
+                    pole[X, Y].Znak = "X";
+                    pole[X, Y].Lod.Zasahy++;
 
-                    foreach (var s in poleHrac[X, Y].Lod.SousedniSouradnice)
+                    vysledek = VysledekZasahu.Zasah;
+
+                    if (pole[X, Y].Lod.Zasahy >= pole[X, Y].Lod.Delka)
                     {
-                        int x = s.X;
-                        int y = s.Y;
+                        pocetLodi++;
 
-                        poleHrac[x, y].Znak = ".";
-                        poleHrac[x, y].Pouzito = true;
+                        foreach (var s in pole[X, Y].Lod.SousedniSouradnice)
+                        {
+                            int x = s.X;
+                            int y = s.Y;
+
+                            pole[x, y].Znak = ".";
+                            pole[x, y].Pouzito = true;
+                        }
+                        vysledek = VysledekZasahu.Potopena;
                     }
-
-                    Console.WriteLine($"Počet zničených lodí: {pocetLodiNPC}/5");
-                    Thread.Sleep(4000);
-                    Zasahy.Clear();
                 }
+                else
+                {
+                    pole[X, Y].Znak = ".";
+                }
+                pole[X, Y].Pouzito = true;
             }
             else
             {
-                poleHrac[X, Y].Znak = ".";
+                vysledek = VysledekZasahu.Neplatne;
             }
-            poleHrac[X, Y].Pouzito = true;
-            pouzitelnaPole.Remove(souradnice);
+            return vysledek;
         }
         public bool Vyhra()
         {

@@ -18,6 +18,8 @@ while (!vyhra)
 
     Console.WriteLine("Napište souřadnice, na které chcete útočit ve formátu: X, Y nebo X Y");
     string souradnice = Console.ReadLine();
+    souradnice = souradnice.Trim();
+
     string[] cislice = new string[2];
 
     if (souradnice.Contains(','))
@@ -28,16 +30,13 @@ while (!vyhra)
     {
         cislice = souradnice.Split(" ");
     }      
-    try
-    {
+
         (int X, int Y) bodZasahu = (Convert.ToInt32(cislice[0]), Convert.ToInt32(cislice[1]));
         mometalniHra.Utok(bodZasahu);
-    }
-    catch
-    {
-        Console.Clear();
+
+
+       /* Console.Clear();
         Console.WriteLine("Zadejte validní souřadnice");
-        Thread.Sleep(3000);
-    }
+        Thread.Sleep(3000);*/
     vyhra = mometalniHra.Vyhra();
 }
