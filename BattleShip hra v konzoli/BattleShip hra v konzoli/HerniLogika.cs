@@ -11,15 +11,23 @@ namespace BattleShip_hra_v_konzoli
     class HerniLogika
     {
         Lode novaHra = new Lode();
+        CustomHra novaCustomHra = new();
+        public bool NahodnaHra;
         public Hrac hrac;
         public AI ai;
         //Konstruktor
-        public HerniLogika()
+        public HerniLogika(bool nahodnaHra)
         {
-            //Vygenerování herních polí pro hráče a AI
-            hrac = new Hrac(novaHra.NovaHra());
+            NahodnaHra = nahodnaHra;
             ai = new AI(novaHra.NovaHra());
-
+            if (NahodnaHra)
+            {
+                hrac = new Hrac(novaHra.NovaHra());
+            }
+            else
+            {
+                hrac = new(novaCustomHra.NovaHra());
+            }
             for (int y = 0; y < hrac.Pole.GetLength(1); y++)
             {
                 for (int x = 0; x < hrac.Pole.GetLength(0); x++)
@@ -57,7 +65,7 @@ namespace BattleShip_hra_v_konzoli
 
             if (X <= 9 && X >= 0 && Y <= 9 && Y >= 0)
             {
-                hrac.Utok(X, Y);
+                hrac.Utok(ai, X, Y);
             }
             else
             {
@@ -65,16 +73,16 @@ namespace BattleShip_hra_v_konzoli
                 return;
             }
 
-            ai.Utok();
+            ai.Utok(hrac);
         }
         public bool Vyhra()
         {
-            if(ai.PocetZnicenychLodi == 5)
+            if (ai.PocetZnicenychLodi == 5)
             {
                 Console.WriteLine("Prohráli jste");
                 return true;
             }
-            if(hrac.PocetZnicenychLodi == 5)
+            if (hrac.PocetZnicenychLodi == 5)
             {
                 Console.WriteLine("Vyhráli jste");
                 return true;

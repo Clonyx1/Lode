@@ -10,11 +10,11 @@ namespace BattleShip_hra_v_konzoli
     {
         private HashSet<(int, int)> zabraneSouradnice = new HashSet<(int, int)>();
         private static readonly Random r = new Random();
-        public Lod letadlova;
-        public Lod bitevni;
-        public Lod kriznik;
-        public Lod ponorka;
-        public Lod clun;
+        public Lod letadlova = null!;
+        public Lod bitevni = null!;
+        public Lod kriznik = null!;
+        public Lod ponorka = null!;
+        public Lod clun = null!;
         public Lode()
         {
         }
@@ -41,7 +41,7 @@ namespace BattleShip_hra_v_konzoli
                     hraciPole[i, j] = new HraciPole("~", null, false);
                 }
             }
-            Lod[] lode = new Lod[] { letadlova, bitevni, kriznik, ponorka, clun };
+            Lod[] lode = { letadlova, bitevni, kriznik, ponorka, clun };
 
             foreach(var lod in lode) NaplneniHracihoPole(hraciPole, lod);
 
@@ -55,7 +55,7 @@ namespace BattleShip_hra_v_konzoli
                 int X = pozice.X;
                 int Y = pozice.Y;
 
-                hraciPole[(int)X, (int)Y] = new HraciPole("~", lod, false);
+                hraciPole[X, Y] = new HraciPole("~", lod, false);
             }
         }
         //Vygeneruje lodi náhodnou orientaci

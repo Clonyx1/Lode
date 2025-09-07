@@ -28,14 +28,14 @@ namespace BattleShip_hra_v_konzoli
 
 
         //Metody
-        public void Utok(int X, int Y)
+        public void Utok(Hrac ai, int X, int Y)
         {
             if (X <= 9 && X >= 0 && Y <= 9 && Y >= 0)
             {
-                VysledekZasahu vysledek = KontrolaZasahu(X, Y);
+                VysledekZasahu vysledek = KontrolaZasahu(ai, X, Y);
                 if (vysledek == VysledekZasahu.Potopena)
                 {
-                    Console.WriteLine("Zničili jste loď " + Pole[X, Y].Lod.Nazev);
+                    Console.WriteLine("Zničili jste loď " + ai.Pole[X, Y].Lod.Nazev);
                     Console.WriteLine($"Počet zničených lodí: {PocetZnicenychLodi}/5");
                     Thread.Sleep(4000);
                 }
@@ -52,40 +52,40 @@ namespace BattleShip_hra_v_konzoli
                 return;
             }
         }
-        public VysledekZasahu KontrolaZasahu(int X, int Y)
+        public VysledekZasahu KontrolaZasahu(Hrac ai, int X, int Y)
         {
             VysledekZasahu vysledek = VysledekZasahu.Vedle;
 
             (int X, int Y) souradnice = (X, Y);
-            if (!Pole[X, Y].Pouzito)
+            if (!ai.Pole[X, Y].Pouzito)
             {
-                if (Pole[X, Y].JeLod)
+                if (ai.Pole[X, Y].JeLod)
                 {
-                    Pole[X, Y].Znak = "X";
-                    Pole[X, Y].Lod.Zasahy++;
+                    ai.Pole[X, Y].Znak = "X";
+                    ai.Pole[X, Y].Lod.Zasahy++;
 
                     vysledek = VysledekZasahu.Zasah;
 
-                    if (Pole[X, Y].Lod.Zasahy >= Pole[X, Y].Lod.Delka)
+                    if (ai.Pole[X, Y].Lod.Zasahy >= ai.Pole[X, Y].Lod.Delka)
                     {
                         PocetZnicenychLodi++;
 
-                        foreach (var s in Pole[X, Y].Lod.SousedniSouradnice)
+                        foreach (var s in ai.Pole[X, Y].Lod.SousedniSouradnice)
                         {
                             int x = s.X;
                             int y = s.Y;
 
-                            Pole[x, y].Znak = ".";
-                            Pole[x, y].Pouzito = true;
+                            ai.Pole[x, y].Znak = ".";
+                            ai.Pole[x, y].Pouzito = true;
                         }
                         vysledek = VysledekZasahu.Potopena;
                     }
                 }
                 else
                 {
-                    Pole[X, Y].Znak = ".";
+                    ai.Pole[X, Y].Znak = ".";
                 }
-                Pole[X, Y].Pouzito = true;
+                ai.Pole[X, Y].Pouzito = true;
             }
             else
             {

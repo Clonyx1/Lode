@@ -16,19 +16,19 @@ namespace BattleShip_hra_v_konzoli
             
         }
         //Metody
-        public void Utok()
+        public void Utok(Hrac hrac)
         {
 
             switch (Zasahy.Count)
             {
                 case 0:
-                    UtokRandom();
+                    UtokRandom(hrac);
                     break;
                 case 1:
-                    UtokSousedniSouradniceRandom();
+                    UtokSousedniSouradniceRandom(hrac);
                     break;
                 case >= 2:
-                    UtokNajitaLod();
+                    UtokNajitaLod(hrac);
                     break;
                 default:
                     Console.WriteLine("Něco se nepovedlo - Utok NPC");
@@ -37,19 +37,19 @@ namespace BattleShip_hra_v_konzoli
             }
 
         }
-        private void UtokRandom()
+        private void UtokRandom(Hrac hrac)
         {
             (int X, int Y) souradnice = pouzitelnaPole[r.Next(pouzitelnaPole.Count)];
 
             int X = souradnice.X;
             int Y = souradnice.Y;
 
-            VysledekZasahu vysledek = KontrolaZasahu(X, Y);
+            VysledekZasahu vysledek = KontrolaZasahu(hrac, X, Y);
             if (vysledek == VysledekZasahu.Zasah) Zasahy.Add(souradnice);
 
             pouzitelnaPole.Remove(souradnice);
         }
-        private void UtokSousedniSouradniceRandom()
+        private void UtokSousedniSouradniceRandom(Hrac hrac)
         {
             (int X, int Y) souradnice = Zasahy[0];
 
@@ -70,18 +70,18 @@ namespace BattleShip_hra_v_konzoli
             X = souradnice.X;
             Y = souradnice.Y;
 
-            VysledekZasahu vysledek = KontrolaZasahu(X, Y);
+            VysledekZasahu vysledek = KontrolaZasahu(hrac, X, Y);
             if (vysledek == VysledekZasahu.Zasah) Zasahy.Add(souradnice);
             if (vysledek == VysledekZasahu.Potopena)
             {
                 Zasahy.Clear();
-                Console.WriteLine("Vaše loď " + Pole[X, Y].Lod.Nazev + " byla zničena");
+                Console.WriteLine("Vaše loď " + hrac.Pole[X, Y].Lod.Nazev + " byla zničena");
                 Console.WriteLine($"Počet zničených lodí: {PocetZnicenychLodi}/5");
                 Thread.Sleep(4000);
             }
             pouzitelnaPole.Remove(souradnice);
         }
-        private void UtokNajitaLod()
+        private void UtokNajitaLod(Hrac hrac)
         {
             //Od nejmenších po největší
             Zasahy.Sort();
@@ -126,12 +126,12 @@ namespace BattleShip_hra_v_konzoli
             int X = souradnice.X;
             int Y = souradnice.Y;
 
-            VysledekZasahu vysledek = KontrolaZasahu(X, Y);
+            VysledekZasahu vysledek = KontrolaZasahu(hrac, X, Y);
             if (vysledek == VysledekZasahu.Zasah) Zasahy.Add(souradnice);
             if (vysledek == VysledekZasahu.Potopena)
             {
                 Zasahy.Clear();
-                Console.WriteLine("Vaše loď " + Pole[X, Y].Lod.Nazev + " byla zničena");
+                Console.WriteLine("Vaše loď " + hrac.Pole[X, Y].Lod.Nazev + " byla zničena");
                 Console.WriteLine($"Počet zničených lodí: {PocetZnicenychLodi}/5");
                 Thread.Sleep(4000);
             }

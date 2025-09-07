@@ -13,9 +13,9 @@ namespace BattleShip_hra_v_konzoli
         public bool Pouzito { get; set; }
         
 
-        public Lod Lod { get; set; }
+        public Lod? Lod { get; set; }
         //Konstruktor
-        public HraciPole(string znak, Lod lod, bool pouzito)
+        public HraciPole(string znak, Lod? lod, bool pouzito)
         {
             Znak = znak;
             Lod = lod;
