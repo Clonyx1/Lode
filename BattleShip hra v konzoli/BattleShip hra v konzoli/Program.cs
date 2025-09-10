@@ -11,10 +11,28 @@ class Program
         string[,] viditelnaPoleAI = new string[10, 10];
 
         bool vyhra = false;
+        var stavHry = StavHry.HraProbiha;
 
         while (true)
         {
-            Console.WriteLine("Přeje si dostat náhodně rozmístěné lodě nebo si je chcete umístit sami? Zadejte 1 nebo 2");
+            if (stavHry == StavHry.VyhraHrac)
+            {
+                Console.WriteLine("Vyhráli jste");
+                Thread.Sleep(4000);
+            }
+            if (stavHry == StavHry.VyhraAI)
+            {
+                Console.WriteLine("AI vyhrává");
+                Thread.Sleep(4000);
+            }
+            stavHry = StavHry.HraProbiha;
+
+            Console.Clear();
+            Console.WriteLine("Přeje si hrát s: ");
+            Console.WriteLine("1) Hru s náhodným rozmístěním lodí");
+            Console.WriteLine("2) Hru, kde si umístíte lodě sami");
+            Console.WriteLine("\nZadejte 1 nebo 2 dle Vašeho výběru");
+
             string vstup = Console.ReadLine();
 
             bool randomHra = (Convert.ToInt32(vstup) == 1) ? true : false;
@@ -22,7 +40,8 @@ class Program
             if (randomHra)
             {
                 momentalniHra = new(randomHra);
-                while (!vyhra)
+                
+                while (stavHry == StavHry.HraProbiha)
                 {
                     Console.Clear();
                     momentalniHra.ZobrazitPole("Pole nepřítele", momentalniHra.ai.Pole);
@@ -53,7 +72,7 @@ class Program
                         Thread.Sleep(4000);
                     }
 
-                    vyhra = momentalniHra.Vyhra();
+                    stavHry = momentalniHra.StavHry;
                 }
             }
             else
@@ -63,7 +82,7 @@ class Program
                 Console.Clear();
 
                 momentalniHra = new(randomHra);
-                while (!vyhra)
+                while (stavHry == StavHry.HraProbiha)
                 {
                     Console.Clear();
                     momentalniHra.ZobrazitPole("Pole nepřítele", momentalniHra.ai.Pole);
@@ -94,7 +113,7 @@ class Program
                         Thread.Sleep(4000);
                     }
 
-                    vyhra = momentalniHra.Vyhra();
+                    stavHry = momentalniHra.StavHry;
                 }
             }
         }

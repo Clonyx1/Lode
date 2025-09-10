@@ -8,21 +8,42 @@ using System.Threading.Tasks;
 
 namespace BattleShip_hra_v_konzoli
 {
+    public enum StavHry
+    {
+        VyhraHrac,
+        VyhraAI,
+        HraProbiha
+    }
     class HerniLogika
     {
-        Lode novaHra = new Lode();
+        NahodnaHra novaNahodnaHra = new NahodnaHra();
         CustomHra novaCustomHra = new();
         public bool NahodnaHra;
         public Hrac hrac;
         public AI ai;
+        public StavHry StavHry
+        {
+            get
+            {
+                if (ai.PocetZnicenychLodi == 5)
+                {
+                    return BattleShip_hra_v_konzoli.StavHry.VyhraAI;
+                }
+                if (hrac.PocetZnicenychLodi == 5)
+                {
+                    return BattleShip_hra_v_konzoli.StavHry.VyhraHrac;
+                }
+                return BattleShip_hra_v_konzoli.StavHry.HraProbiha;
+            }
+        }
         //Konstruktor
         public HerniLogika(bool nahodnaHra)
         {
             NahodnaHra = nahodnaHra;
-            ai = new AI(novaHra.NovaHra());
+            ai = new AI(novaNahodnaHra.NovaHra());
             if (NahodnaHra)
             {
-                hrac = new Hrac(novaHra.NovaHra());
+                hrac = new Hrac(novaNahodnaHra.NovaHra());
             }
             else
             {
@@ -74,20 +95,6 @@ namespace BattleShip_hra_v_konzoli
             }
 
             ai.Utok(hrac);
-        }
-        public bool Vyhra()
-        {
-            if (ai.PocetZnicenychLodi == 5)
-            {
-                Console.WriteLine("Prohráli jste");
-                return true;
-            }
-            if (hrac.PocetZnicenychLodi == 5)
-            {
-                Console.WriteLine("Vyhráli jste");
-                return true;
-            }
-            return false;
         }
     }
 }

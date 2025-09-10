@@ -9,6 +9,7 @@ namespace BattleShip_hra_v_konzoli
     public abstract class Hra
     {
         protected HashSet<(int, int)> zabraneSouradnice = new HashSet<(int, int)>();
+        protected Lod[] Lode = new Lod[5];
 
         //Metody
         protected HraciPole[,] InicializaceHracihoPole(Lod[] lode)

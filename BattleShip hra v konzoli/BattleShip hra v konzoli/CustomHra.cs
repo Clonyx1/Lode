@@ -8,7 +8,6 @@ namespace BattleShip_hra_v_konzoli
 {
     public class CustomHra : Hra
     {
-        List<Lod> Lode = new();
         HraciPole[,] pole = new HraciPole[10, 10];
 
         //Konstruktor
@@ -19,11 +18,11 @@ namespace BattleShip_hra_v_konzoli
         //Metody
         public HraciPole[,] NovaHra()
         {
-            Lode.Add(PridaniLodi("Člun", 2));
-            Lode.Add(PridaniLodi("Ponorka", 3));
-            Lode.Add(PridaniLodi("Křižník", 3));
-            Lode.Add(PridaniLodi("Bitevní loď", 4));
-            Lode.Add(PridaniLodi("Letadlová loď", 5));
+            Lode[4] = PridaniLodi("Člun", 2);
+            Lode[3] = PridaniLodi("Ponorka", 3);
+            Lode[2] = PridaniLodi("Křižník", 3);
+            Lode[1] = PridaniLodi("Bitevní loď", 4);
+            Lode[0] = PridaniLodi("Letadlová loď", 5);
 
             HraciPole[,] hraciPole = InicializaceHracihoPole(Lode.ToArray());
 
