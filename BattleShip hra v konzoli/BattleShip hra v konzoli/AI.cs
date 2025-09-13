@@ -10,10 +10,11 @@ namespace BattleShip_hra_v_konzoli
     {
         private List<(int X, int Y)> Zasahy = new List<(int X, int Y)>();
         public List<(int X, int Y)> pouzitelnaPole = new List<(int X, int Y)>();
+        private Dictionary<(int X, int Y), int> heatMap = new();
         //Konstruktor
         public AI(HraciPole[,] pole) : base(pole) 
         {
-            
+        
         }
         //Metody
         public void Utok(Hrac hrac)
@@ -22,7 +23,7 @@ namespace BattleShip_hra_v_konzoli
             switch (Zasahy.Count)
             {
                 case 0:
-                    UtokRandom(hrac);
+                    UtokNenajitaLod(hrac);
                     break;
                 case 1:
                     UtokSousedniSouradniceRandom(hrac);
@@ -37,9 +38,72 @@ namespace BattleShip_hra_v_konzoli
             }
 
         }
-        private void UtokRandom(Hrac hrac)
+        private void VyplneniHeatMapy(Hrac hrac)
         {
-            (int X, int Y) souradnice = pouzitelnaPole[r.Next(pouzitelnaPole.Count)];
+            for(int y = 0; y < hrac.Pole.GetLength(1); y++)
+            {
+                for(int x = 0; x < hrac.Pole.GetLength(0); x++)
+                {
+                    if (!hrac.Pole[x, y].Pouzito) ZkouskaLodi((x, y), hrac, hrac.zbyvajiciLode.Max(lod => lod.Delka));
+                }
+            }
+        }
+        private void ZkouskaLodi((int X, int Y) souradnice, Hrac hrac, int maxDelka)
+        { 
+            int X = souradnice.X;
+            int Y = souradnice.Y;
+
+            List<(int X, int Y)> poleZaSebouX = new();
+            List<(int X, int Y)> poleZaSebouY = new();
+            //Horizontální orientace
+            for(int i = 0; i < maxDelka; i++)
+            {
+                if (X + i >= hrac.Pole.GetLength(0)) break;
+                if (!hrac.Pole[X + i, Y].Pouzito)
+                {
+                    poleZaSebouX.Add((X + i, Y));
+                }
+                else if (hrac.Pole[X + i, Y].Pouzito) break;
+            }
+            //Vertikální orientace
+            for(int j = 0; j < maxDelka; j++)
+            {
+                if (Y + j >= hrac.Pole.GetLength(1)) break;
+                if (!hrac.Pole[X, Y + j].Pouzito)
+                {
+                    poleZaSebouY.Add((X, Y+j));
+                }
+                else if (hrac.Pole[X, Y + j].Pouzito) break;
+            }
+
+            //Doplnění hodnot do heatMapy
+            PridaniVahyPoli(poleZaSebouX, hrac);
+            PridaniVahyPoli(poleZaSebouY, hrac);
+        }
+        private void PridaniVahyPoli(List<(int X, int Y)> poleZaSebou, Hrac hrac)
+        {
+            poleZaSebou.Sort();
+            foreach (var lod in hrac.zbyvajiciLode)
+            {
+                if(lod.Delka <= poleZaSebou.Count)
+                {
+                    for (int i = 0; i < lod.Delka; i++)
+                    {
+                        (int X, int Y) souradnice = poleZaSebou[i];
+                        int X = souradnice.X;
+                        int Y = souradnice.Y;
+
+                        if (heatMap.ContainsKey((X, Y))) heatMap[(X, Y)]++;
+                        else heatMap.Add((X, Y), 1);
+                    }
+                } 
+            }
+        }
+        private void UtokNenajitaLod(Hrac hrac)
+        {
+            VyplneniHeatMapy(hrac);
+
+            (int X, int Y) souradnice = heatMap.Aggregate((l, r) => (l.Value > r.Value) ? l : r).Key;
 
             int X = souradnice.X;
             int Y = souradnice.Y;
@@ -47,10 +111,12 @@ namespace BattleShip_hra_v_konzoli
             VysledekZasahu vysledek = KontrolaZasahu(hrac, X, Y);
             if (vysledek == VysledekZasahu.Zasah) Zasahy.Add(souradnice);
 
+            heatMap.Remove(souradnice);
             pouzitelnaPole.Remove(souradnice);
         }
         private void UtokSousedniSouradniceRandom(Hrac hrac)
         {
+            //Souřadnice, na které AI našlo loď
             (int X, int Y) souradnice = Zasahy[0];
 
             int X = souradnice.X;

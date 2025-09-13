@@ -20,6 +20,8 @@ namespace BattleShip_hra_v_konzoli
         public int PocetZnicenychLodi {  get; set; }
         public Random r = new Random();
 
+        public Lod[] zbyvajiciLode = new Lod[5];
+
         //Konstruktor
         public Hrac(HraciPole[,] pole)
         {

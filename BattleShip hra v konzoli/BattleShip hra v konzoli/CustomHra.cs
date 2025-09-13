@@ -32,25 +32,32 @@ namespace BattleShip_hra_v_konzoli
         {
             while (true)
             {
-                Console.WriteLine($"Zadejte souřadnice {nazev}(délka {delka}) ve tvaru: x, y, orientace(v/h), tudíž např. 1, 2, v (= počáteční souřadnice 1x, 2y, orientace vertikální)");
-                string odpoved = Console.ReadLine();
-
-                string[] parametryLodi = odpoved.Split(',');
-
-                Orientace o = (parametryLodi[2].Trim() == "v") ? Orientace.Vertikalni : Orientace.Horizontalni;
-                int x = Convert.ToInt32(parametryLodi[0]);
-                int y = Convert.ToInt32(parametryLodi[1]);
-
-                Lod lod = new Lod(nazev, delka, o, (x, y));
-                if (JeValidni(lod))
+                try
                 {
-                    ZabratSouradnice(lod);
-                    ZobrazitRozlozeniLodi(lod);
-                    return lod;
+                    Console.WriteLine($"Zadejte souřadnice {nazev}(délka {delka}) ve tvaru: x, y, orientace(v/h), tudíž např. 1, 2, v (= počáteční souřadnice 1x, 2y, orientace vertikální)");
+                    string odpoved = Console.ReadLine();
+
+                    string[] parametryLodi = odpoved.Split(',');
+
+                    Orientace o = (parametryLodi[2].Trim() == "v") ? Orientace.Vertikalni : Orientace.Horizontalni;
+                    int x = Convert.ToInt32(parametryLodi[0]);
+                    int y = Convert.ToInt32(parametryLodi[1]);
+
+                    Lod lod = new Lod(nazev, delka, o, (x, y));
+                    if (JeValidni(lod))
+                    {
+                        ZabratSouradnice(lod);
+                        ZobrazitRozlozeniLodi(lod);
+                        return lod;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Zadali jste neplatný vstup, zkuste to znovu!");
+                    }
                 }
-                else
+                catch
                 {
-                    Console.WriteLine("Zadali jste neplatný vstup, zkuste to znovu!");
+                    Console.WriteLine("Zadejte počáteční souřadnice a orientaci ve správném tvaru!");
                 }
             }
         }
@@ -75,10 +82,18 @@ namespace BattleShip_hra_v_konzoli
                 pole[X, Y].Pouzito = false;
                 pole[X, Y].Lod = lod;
             }
+            bool prvniIterace = true; 
             for (int y = 0; y < pole.GetLength(1); y++)
             {
+                if (!prvniIterace) Console.Write(y + " ");
                 for (int x = 0; x < pole.GetLength(0); x++)
                 {
+                    if (prvniIterace)
+                    {
+                        Console.WriteLine("  0 1 2 3 4 5 6 7 8 9");
+                        Console.Write("0 ");
+                        prvniIterace = false;
+                    }
                     Console.Write(pole[x, y].Znak + " ");
                 }
                 Console.WriteLine();

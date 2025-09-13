@@ -44,10 +44,13 @@ namespace BattleShip_hra_v_konzoli
             if (NahodnaHra)
             {
                 hrac = new Hrac(novaNahodnaHra.NovaHra());
+
+                hrac.zbyvajiciLode = novaNahodnaHra.Lode;
             }
             else
             {
                 hrac = new(novaCustomHra.NovaHra());
+                hrac.zbyvajiciLode = novaCustomHra.Lode;
             }
             for (int y = 0; y < hrac.Pole.GetLength(1); y++)
             {
