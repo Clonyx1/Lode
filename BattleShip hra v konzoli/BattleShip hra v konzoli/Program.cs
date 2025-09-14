@@ -13,17 +13,17 @@ class Program
         bool vyhra = false;
         var stavHry = StavHry.HraProbiha;
 
-        /* while (true)
+         while (true)
          {
              if (stavHry == StavHry.VyhraHrac)
              {
                  Console.WriteLine("Vyhráli jste");
-                 Thread.Sleep(2000);
+                 Thread.Sleep(4000);
              }
              if (stavHry == StavHry.VyhraAI)
              {
                  Console.WriteLine("AI vyhrává");
-                 Thread.Sleep(2000);
+                 Thread.Sleep(4000);
              }
              stavHry = StavHry.HraProbiha;
 
@@ -124,8 +124,11 @@ class Program
                  Console.WriteLine("Zadejte validní odpověď");
                  Thread.Sleep(2000);
              }
-         }*/
-        bool randomHra = true;
+         }
+
+        //PRO TESTOVACÍ ÚČELY
+
+       /* bool randomHra = true;
         momentalniHra = new(randomHra);
 
         while (stavHry == StavHry.HraProbiha)
@@ -152,7 +155,7 @@ class Program
                 momentalniHra.Utok(bodZasahu);
 
             stavHry = momentalniHra.StavHry;
-        }
+        }*/
     }
 }
 
