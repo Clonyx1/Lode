@@ -18,12 +18,12 @@ class Program
              if (stavHry == StavHry.VyhraHrac)
              {
                  Console.WriteLine("Vyhráli jste");
-                 Thread.Sleep(2000);
+                 Thread.Sleep(4000);
              }
              if (stavHry == StavHry.VyhraAI)
              {
                  Console.WriteLine("AI vyhrává");
-                 Thread.Sleep(2000);
+                 Thread.Sleep(4000);
              }
              stavHry = StavHry.HraProbiha;
 
@@ -127,10 +127,7 @@ class Program
          }
 
         //PRO TESTOVACÍ ÚČELY
-        /*var stavHry = StavHry.HraProbiha;
-        HerniLogika momentalniHra;
-
-        bool randomHra = true;
+       /* bool randomHra = true;
         momentalniHra = new(randomHra);
 
         while (stavHry == StavHry.HraProbiha)

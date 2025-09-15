@@ -105,7 +105,7 @@ namespace BattleShip_hra_v_konzoli
         {
             VyplneniHeatMapy(hrac);
 
-            (int X, int Y) souradnice = heatMap.Aggregate((l, r) => (l.Value > r.Value) ? l : r).Key;
+            (int X, int Y) souradnice = SouradnicePodleFazeHry(PocetZnicenychLodi);
 
             int X = souradnice.X;
             int Y = souradnice.Y;
@@ -115,6 +115,49 @@ namespace BattleShip_hra_v_konzoli
 
             heatMap.Remove(souradnice);
             pouzitelnaPole.Remove(souradnice);
+        }
+        private (int X, int Y) SouradnicePodleFazeHry(int fazeHry)
+        {
+            (int X, int Y) souradnice = heatMap.OrderByDescending(x => x.Value).First().Key;
+            //Začátek hry
+            if (fazeHry < 1)
+            {
+                var top10 = heatMap.OrderByDescending(x => x.Value).Take(10).ToList();
+                souradnice = VazenyVyberSouradnice(top10);
+            }
+            //Přechod do středu hry
+            if (fazeHry == 2)
+            {
+                var top3 = heatMap.OrderByDescending(x => x.Value).Take(3).ToList();
+                souradnice = VazenyVyberSouradnice(top3);
+            }
+
+            return souradnice;
+        }
+        private (int X, int Y) VazenyVyberSouradnice(List<KeyValuePair<(int X, int Y), int>> topN)
+        {
+            (int X, int Y) souradnice = (0, 0);
+
+            int celkovaVaha = 0;
+            foreach(var kvp in topN)
+            {
+                celkovaVaha += kvp.Value;
+            }
+
+            double nahodne = r.NextDouble() * celkovaVaha;
+
+            foreach(var kvp in topN)
+            {
+                nahodne -= kvp.Value;
+
+                if(nahodne < 0)
+                {
+                    souradnice = kvp.Key;
+                    break;
+                }
+            }
+
+            return souradnice;
         }
         private void UtokSousedniSouradniceRandom(Hrac hrac)
         {
