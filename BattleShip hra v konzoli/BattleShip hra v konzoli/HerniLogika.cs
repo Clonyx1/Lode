@@ -87,16 +87,22 @@ namespace BattleShip_hra_v_konzoli
             int X = souradnice.X;
             int Y = souradnice.Y;
 
-            if (X <= 9 && X >= 0 && Y <= 9 && Y >= 0)
+            if (X <= 9 && X >= 0 && Y <= 9 && Y >= 0 && !ai.Pole[X, Y].Pouzito)
             {
                 hrac.Utok(ai, X, Y);
+            }
+            else if (ai.Pole[X, Y].Pouzito)
+            {
+                Console.WriteLine("Tyto souřadnice již byly použity, zadejte jiné!");
+                Thread.Sleep(2000);
+                return;
             }
             else
             {
                 Console.WriteLine("Zadané souřadnice jsou mimo rozsah hracího pole, zadejte jiné");
+                Thread.Sleep(2000);
                 return;
             }
-
             ai.Utok(hrac);
         }
     }

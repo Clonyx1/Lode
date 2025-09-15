@@ -41,12 +41,6 @@ namespace BattleShip_hra_v_konzoli
                     Console.WriteLine($"Počet zničených lodí: {PocetZnicenychLodi}/5");
                     Thread.Sleep(4000);
                 }
-                if (vysledek == VysledekZasahu.Neplatne)
-                {
-                    Console.WriteLine("Tyto souřadnice již byly použity, zadejte jiné!");
-                    Thread.Sleep(3000);
-                    return;
-                }
             }
             else
             {

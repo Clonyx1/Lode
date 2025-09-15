@@ -13,7 +13,7 @@ class Program
         bool vyhra = false;
         var stavHry = StavHry.HraProbiha;
 
-        /* while (true)
+         while (true)
          {
              if (stavHry == StavHry.VyhraHrac)
              {
@@ -124,7 +124,12 @@ class Program
                  Console.WriteLine("Zadejte validní odpověď");
                  Thread.Sleep(2000);
              }
-         }*/
+         }
+
+        //PRO TESTOVACÍ ÚČELY
+        /*var stavHry = StavHry.HraProbiha;
+        HerniLogika momentalniHra;
+
         bool randomHra = true;
         momentalniHra = new(randomHra);
 
@@ -152,7 +157,7 @@ class Program
                 momentalniHra.Utok(bodZasahu);
 
             stavHry = momentalniHra.StavHry;
-        }
+        }*/
     }
 }
 

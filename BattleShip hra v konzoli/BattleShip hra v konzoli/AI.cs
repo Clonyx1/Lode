@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -122,14 +124,7 @@ namespace BattleShip_hra_v_konzoli
             int X = souradnice.X;
             int Y = souradnice.Y;
 
-            List<(int X, int Y)> mozneSouradnice = new List<(int X, int Y)>();
-
-            mozneSouradnice.Add((X - 1, Y));
-            mozneSouradnice.Add((X + 1, Y));
-            mozneSouradnice.Add((X, Y - 1));
-            mozneSouradnice.Add((X, Y + 1));
-
-            mozneSouradnice.RemoveAll(s => !(pouzitelnaPole.Contains(s) && (s.X >= 0 && s.X <= 9) && (s.Y >= 0 && s.Y <= 9)));
+            List<(int X, int Y)> mozneSouradnice = NajitMozneSouradnice(X, Y, hrac);
 
             souradnice = mozneSouradnice[r.Next(mozneSouradnice.Count)];
 
@@ -146,6 +141,20 @@ namespace BattleShip_hra_v_konzoli
                 Thread.Sleep(4000);
             }
             pouzitelnaPole.Remove(souradnice);
+        }
+        private List<(int X, int Y)> NajitMozneSouradnice(int X, int Y, Hrac hrac)
+        {
+            List<(int X, int Y)> mozneSouradnice = new();
+
+            mozneSouradnice.Add((X - 1, Y));
+            mozneSouradnice.Add((X + 1, Y));
+            mozneSouradnice.Add((X, Y - 1));
+            mozneSouradnice.Add((X, Y + 1));
+
+            //Odebere z listu všechny nevalidní souřadnice
+            mozneSouradnice.RemoveAll(s => !(pouzitelnaPole.Contains(s) && (s.X >= 0 && s.X <= 9) && (s.Y >= 0 && s.Y <= 9)));
+
+            return mozneSouradnice;
         }
         private void UtokNajitaLod(Hrac hrac)
         {
