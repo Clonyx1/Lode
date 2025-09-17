@@ -101,6 +101,7 @@ namespace BattleShip_hra_v_konzoli
                 } 
             }
         }
+        //Vybere nejpravděpodobnější souřadnice a zaútočí
         private void UtokNenajitaLod(Hrac hrac)
         {
             VyplneniHeatMapy(hrac);
@@ -122,14 +123,8 @@ namespace BattleShip_hra_v_konzoli
             //Začátek hry
             if (fazeHry < 1)
             {
-                var top10 = heatMap.OrderByDescending(x => x.Value).Take(10).ToList();
-                souradnice = VazenyVyberSouradnice(top10);
-            }
-            //Přechod do středu hry
-            if (fazeHry == 2)
-            {
-                var top3 = heatMap.OrderByDescending(x => x.Value).Take(3).ToList();
-                souradnice = VazenyVyberSouradnice(top3);
+                var top5 = heatMap.OrderByDescending(x => x.Value).Take(5).ToList();
+                souradnice = VazenyVyberSouradnice(top5);
             }
 
             return souradnice;
@@ -187,15 +182,61 @@ namespace BattleShip_hra_v_konzoli
         }
         private List<(int X, int Y)> NajitMozneSouradnice(int X, int Y, Hrac hrac)
         {
+            int minDelka = hrac.zbyvajiciLode.Min(lod => lod.Delka);
+            //Najde souřadnice v okolí zásahu
+            Dictionary<(int X, int Y), Orientace> okolniSouradnice = ZiskejOkolniPole(X, Y, minDelka, hrac);
+            //Vybere ty souřadnice, na kterých by se mohla nacházet loď
+            List<(int X, int Y)> mozneSouradnice = VyberSmysluplnychSouradnic(X, Y, minDelka, okolniSouradnice, hrac);
+
+            return mozneSouradnice;
+        }
+        //Najde souřadnice sousedící s Zasahy[0]
+        private Dictionary<(int X, int Y), Orientace> ZiskejOkolniPole(int X, int Y, int minDelka, Hrac hrac)
+        {
+            Dictionary<(int X, int Y), Orientace> okolniSouradnice = new(); 
+
+            (int posunX, int posunY, Orientace orientace)[] smery =
+{
+                (-1, 0, Orientace.Horizontalni), //doleva
+                (1, 0, Orientace.Horizontalni), //doprava
+                (0, 1, Orientace.Vertikalni), //dolu
+                (0, -1, Orientace.Vertikalni) //nahoru
+            };
+
+            foreach (var (posunX, posunY, orientace) in smery)
+            {
+                for (int i = 1; i < minDelka; i++)
+                {
+                    var souradniceX = X + posunX * i;
+                    var souradniceY = Y + posunY * i;
+
+                    if (souradniceX < 0 || souradniceX > 9 || souradniceY < 0 || souradniceY > 9) break;
+
+                    if (hrac.Pole[souradniceX, souradniceY].Pouzito) break;
+
+                    okolniSouradnice.Add((souradniceX, souradniceY), orientace);
+                }
+            }
+            return okolniSouradnice;
+        }
+        //Vyhodnotí souřadnice, na kterých by se mohla nacházet loď
+        private List<(int X, int Y)> VyberSmysluplnychSouradnic(int X, int Y, int minDelka, Dictionary<(int X, int Y), Orientace> okolniSouradnice, Hrac hrac)
+        {
             List<(int X, int Y)> mozneSouradnice = new();
 
-            mozneSouradnice.Add((X - 1, Y));
-            mozneSouradnice.Add((X + 1, Y));
-            mozneSouradnice.Add((X, Y - 1));
-            mozneSouradnice.Add((X, Y + 1));
+            int pocetHorizontalnich = okolniSouradnice.Count(s => s.Value == Orientace.Horizontalni);
+            int pocetVertikalnich = okolniSouradnice.Count(s => s.Value == Orientace.Vertikalni);
 
-            //Odebere z listu všechny nevalidní souřadnice
-            mozneSouradnice.RemoveAll(s => !(pouzitelnaPole.Contains(s) && (s.X >= 0 && s.X <= 9) && (s.Y >= 0 && s.Y <= 9)));
+            if (pocetHorizontalnich >= minDelka - 1)
+            {
+                if (X + 1 <= 9 && !hrac.Pole[X + 1, Y].Pouzito) mozneSouradnice.Add((X + 1, Y));
+                if (X - 1 >= 0 && !hrac.Pole[X - 1, Y].Pouzito) mozneSouradnice.Add((X - 1, Y));
+            }
+            if (pocetVertikalnich >= minDelka - 1)
+            {
+                if (Y + 1 <= 9 && !hrac.Pole[X, Y + 1].Pouzito) mozneSouradnice.Add((X, Y + 1));
+                if (Y - 1 >= 0 && !hrac.Pole[X, Y - 1].Pouzito) mozneSouradnice.Add((X, Y - 1));
+            }
 
             return mozneSouradnice;
         }
